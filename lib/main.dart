@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:english_words/english_words.dart';
 
 void main() => runApp(new MyApp());
 
@@ -19,7 +20,93 @@ class MyApp extends StatelessWidget {
         // counter didn't reset back to zero; the application is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: new MyHomePage(title: 'Flutter Demo Home Page'),
+      home: new Scaffold(
+        appBar: new AppBar(
+          title: new Text("My Flutter Demo App"),
+        ),
+        body: new Center(
+          //child: new Text("Hello world!"),
+          child: new RandomPage(),
+        ),
+      ),
+      //home: new MyHomePage(title: 'Flutter Demo Home Page'),
+    );
+  }
+}
+
+class RandomPage extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() {
+    return new RandomPageState();
+  }
+
+}
+
+class RandomPageState extends State<RandomPage> {
+  final suggestions = <WordPair>[];
+  final savedWords = Set<WordPair>();
+  final bigFont = const TextStyle(fontSize: 20.0);
+
+  Widget buildList(BuildContext context) {
+    return new ListView.builder(
+      padding: const EdgeInsets.all(16.0),
+      itemBuilder: (context, i) {
+
+        if (i.isOdd) {
+          return new Divider();
+        }
+
+        final index = i ~/ 2;
+
+        if (index >= suggestions.length) {
+          suggestions.add(WordPair.random());
+          suggestions.add(WordPair.random());
+          suggestions.add(WordPair.random());
+          suggestions.add(WordPair.random());
+          suggestions.add(WordPair.random());
+          suggestions.add(WordPair.random());
+          suggestions.add(WordPair.random());
+          suggestions.add(WordPair.random());
+          suggestions.add(WordPair.random());
+          suggestions.add(WordPair.random());
+        }
+
+        return buildRow(suggestions[index]);
+      },
+    );
+  }
+
+  Widget buildText(BuildContext context) {
+    final wordPair = new WordPair.random();
+    return new Text(wordPair.asPascalCase);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return buildList(context);
+  }
+
+  Widget buildRow(WordPair suggestion) {
+    final isSaved = savedWords.contains(suggestion);
+
+    return new ListTile(
+      title: new Text(
+        suggestion.asPascalCase,
+        style: bigFont,),
+      trailing: new Icon(
+        isSaved ? Icons.favorite : Icons.favorite_border,
+        color: isSaved ? Colors.red : Colors.grey,
+      ),
+      onTap: () {
+        setState(() {
+          if (isSaved) {
+            savedWords.remove(suggestion);
+          } else {
+            savedWords.add(suggestion);
+          }
+        });
+      },
     );
   }
 }
